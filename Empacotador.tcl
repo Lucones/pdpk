@@ -3,17 +3,17 @@
 package require Tk
 
 
-#  Create the main message window
+#  Janela principal
 message .m  -background #C0C0C0
 pack .m -expand true -fill both -ipadx 200 -ipady 100
 
-#  Create the main menu bar with a Help-About entry
+#  Barra de menu
 menu .menubar
 menu .menubar.help -tearoff 0
 menu .menubar.file -tearoff 0
 .menubar add cascade -label Help -menu .menubar.help -underline 0
 .menubar.help add command -label {About Hello ...} \
-    -accelerator F1 -underline 0 -command showAbout
+    -accelerator F1 -underline 0 -command Sobre
 
 .menubar add cascade -label File -menu .menubar.file -underline 0
 .menubar.file add command -label {Add File} \
@@ -24,24 +24,28 @@ menu .menubar.pdpk -tearoff 0
 .menubar.pdpk add command -label {Criar Pacote} \
 	 -command Sel_Arq
 .menubar.pdpk add command -label {Instalar Extensão} \
-	-command demo
+	-command Instalar
 .menubar.pdpk add command -label {Adicionar ao Repositório} \
-	-command showAbout
+	-command Add_Rep
 	
-#  Configure the main window 
+#  Configuração do menu
 wm title . {Hello Foundation Application}
 . configure -menu .menubar -width 200 -height 150
-bind . {<Key F1>} {showAbout}
+bind . {<Key F1>} {Sobre}
 
-#  Define a procedure - an action for Help-About
-proc showAbout {} {
-    tk_messageBox -message "Tcl/Tk\nHello Windows\nVersion 1.0" \
-        -title {About Hello}
+
+proc Sobre {} {
+    tk_messageBox -message "pdpk versão 1.0" \
+        -title {Sobre}
 }
+#Função para instalar pacotes
 proc Instalar {} {
-    tk_messageBox -message "Tcl/Tk\nHello Windows\nVersion 1.0" \
-        -title {teste}
+
 }
+proc Add_Rep {} {
+
+}
+#Função para criar pacotes
 proc Sel_Arq {} {
 	global flag
 		set flag {disabled}
@@ -55,7 +59,7 @@ proc onSelect { label } {
    #set flag {active}
 	
 	if {$file ne ""} {
-    
+		#Ativa o botão para continuar caso selecionado arquivos
 		button .b2 -text "OK" \
 			-command Sel_Doc
 		place .b2 -x 290 -y 180
@@ -67,7 +71,7 @@ proc onSelect { label } {
 label .l -text "..."
 place .l -x 20 -y 60
 
-button .b -text "Selecione o arquivo" \
+button .b -text "Selecione o(s) arquivo(s)" \
         -command "onSelect .l"
 place .b -x 20 -y 30
 
@@ -75,9 +79,5 @@ button .b1 -text "Cancelar" \
         -command main
 place .b1 -x 220 -y 180
 
-
-
-
-#wm title . "Selecionar Arquivo" 
-#. configure -menu .menubar -width 200 -height 150 
+ 
 }
