@@ -5,6 +5,7 @@ package require Tk
 	#  Janela principal
 	message .m  -background #C0C0C0
 	pack .m -expand true -fill both -ipadx 200 -ipady 100
+	
 	global flag
 	set flag {0}
 	#  Barra de menu
@@ -23,6 +24,7 @@ package require Tk
 	#  Configuração do menu
 	wm title . {Hello Foundation Application}
 	. configure -menu .menubar -width 200 -height 150
+
 	bind . {<Key F1>} {Sobre}
 
 
@@ -199,7 +201,7 @@ proc Metadados {} {
 	set oldtitle [wm title .t]
 	wm title .t "Criar Pacote"
 	wm resizable .t 1 1 
-	.t configure -height 560
+	.t configure -height 460
 	.t configure -width  300
 	update
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
@@ -207,38 +209,119 @@ proc Metadados {} {
 	wm geometry  .t +$x+$y
 	wm transient .t .
 
-	label .t.l99 -text "Preencha os dados indicados"
-	place .t.l99 -x 40 -y 5
+	label .t.lbl1 -text "Preencha os dados indicados"
+	place .t.lbl1 -x 80 -y 5
+	
+	label .t.lbl2 -text "* = optional"
+	place .t.lbl2 -x 200 -y 360
 
 
 	label .t.name -text "Name"
 	place .t.name -x 20 -y 30
 	entry .t.namei
-	place .t.namei -x 70 -y 30
+	place .t.namei -x 110 -y 30
 	
-	label .t.version -text "Version"
-	place .t.version -x 20 -y 50
-	entry .t.versioni
-	place .t.versioni -x 70 -y 50
+	label .t.sum -text "Summary"
+	place .t.sum -x 20 -y 50
+	entry .t.sumi
+	place .t.sumi -x 110 -y 50
 	
 	label .t.author -text "Author"
 	place .t.author -x 20 -y 70
 	entry .t.authori
-	place .t.authori -x 70 -y 70
-
-
-    labelframe .t.lbl -text "Architecture"
+	place .t.authori -x 110 -y 70
+	
+	label .t.version -text "Version"
+	place .t.version -x 20 -y 90
+	entry .t.versioni -validate key -vcmd {string is double %P}
+	place .t.versioni -x 110 -y 90	
+	
+    labelframe .t.lbl -text "Architecture" -padx 0 
 	checkbutton .t.c1 -text "Windows x86"  -variable win32
 	checkbutton .t.c2 -text "Windows x64" -variable win64
-	checkbutton .t.c3 -text "Linux" -variable linux
-	checkbutton .t.c4 -text "MacFag" -variable mac
-	pack .t.c1 .t.c2 .t.c3  .t.c4 -in .t.lbl
-	place .t.lbl -x 20 -y 200
+	checkbutton .t.c3 -text "Linux" -variable linux 
+	checkbutton .t.c4 -text "MacFag" -variable mac  
+	pack .t.c1 .t.c2 .t.c3  .t.c4 -in .t.lbl -anchor w	
+	place .t.lbl -x 120 -y 115
+	
+	label .t.license -text "License"
+	place .t.license -x 20 -y 230
+	entry .t.licensei
+	place .t.licensei -x 110 -y 230
+	
+	label .t.type -text "Type"
+	place .t.type -x 20 -y 250
+	entry .t.typei
+	place .t.typei -x 110 -y 250
+	
+	 label .t.source -text "Source"
+	place .t.source -x 20 -y 270
+	entry .t.sourcei
+	place .t.sourcei -x 110 -y 270
+	
+	label .t.description -text "Description"
+	place .t.description -x 20 -y 290
+	entry .t.descriptioni
+	place .t.descriptioni -x 110 -y 290
+	
+	label .t.dependecies -text "Dependecies*"
+	place .t.dependecies -x 20 -y 310
+	entry .t.dependeciesi
+	place .t.dependeciesi -x 110 -y 310
+	
+	label .t.conflicts -text "Conflicts*"
+	place .t.conflicts -x 20 -y 330
+	entry .t.conflictsi 
+	place .t.conflictsi -x 110 -y 330
+	
+	button .t.b1 -text "Cancelar" \
+			-command {Cancelar .t}
+	place .t.b1 -x 80 -y 400
     
-	button .t.b -text "Criar Pacote" -command {
-			set ask1 [.t.namei get]
-			puts "User: $ask1"
-
-	}
-	place .t.b -x 20 -y 150
+		
+		
+		
+		button .t.b -text "Criar Pacote" \
+				-command {
+					set name [.t.namei get]
+					set sum [.t.sumi get]
+					set author [.t.authori get]
+					set version [.t.versioni get]
+					set license [.t.licensei get]
+					set type [.t.typei get]
+					set source [.t.sourcei get]
+					set description [.t.descriptioni get]
+					set dependecies [.t.dependeciesi get]
+					set conflicts [.t.conflictsi get]
+					if { $name ne "" && $sum ne "" && $author ne "" && $version ne "" && $license ne "" && $type ne "" && $source ne "" && $description ne ""} {
+						set descriptor "Descriptor.txt"
+						set outfile [open "Descriptor.txt" w]
+						
+						puts $outfile "Name: $name "
+						puts $outfile "Summary: $sum "
+						puts $outfile "Author: $author "
+						puts $outfile "Version: $version "
+						puts $outfile "License: $license "
+						puts $outfile "Type: $type "
+						puts $outfile "Source: $source "
+						puts $outfile "Description: $description "
+						puts $outfile "Dependecies: $dependecies "
+						puts $outfile "Conflicts: $conflicts "
+						
+						close $outfile
+						
+						
+						exec zip package.zip $descriptor
+						file delete -force -- $descriptor
+						tk_messageBox -message "Pacote criado com sucesso!" -type ok
+						destroy .t
+				
+					} else {
+						tk_messageBox -message "Please fill all the data!" -type ok
+					}
+					}
+		place .t.b -x 170 -y 400
+	
+	
+	
 }
