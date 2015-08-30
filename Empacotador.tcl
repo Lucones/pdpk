@@ -5,7 +5,7 @@ package require Tk
 	#  Janela principal
 	message .m  -background #C0C0C0
 	pack .m -expand true -fill both -ipadx 200 -ipady 100
-	
+	set var 0
 	global flag
 	set flag {0}
 	#  Barra de menu
@@ -39,20 +39,22 @@ proc Instalar {} {
 proc Add_Rep {} {
 
 }
-proc Sel_Arq { } {
+proc Sel_Arq { varname } {
 		
 	set types {
 		{{PD Externals}       *        }
 	}
 		
 	set file [tk_getOpenFile -multiple 1 -filetypes $types -parent .]
-	#.t.l configure -text $file
-	.t.l configure -state disabled  
 	set i 0
 	set x 100
 	
 	foreach j $file {
 		incr i
+		 if [winfo exists .t.l$i] {
+			destroy .t.l$i
+			destroy .t.b2
+		}
 		set y [expr {$i*20 + 40}]
 		label .t.l$i -text $j
 		place .t.l$i -x 20 -y $y
@@ -77,7 +79,7 @@ proc Sel_Arq { } {
 
 #Função para criar pacotes
 proc Criar {} {
-
+	
 	tk::toplevel .t
 	set oldtitle [wm title .t]
 	wm title .t "Create Package"
@@ -97,7 +99,7 @@ proc Criar {} {
 	place .t.l -x 20 -y 60
 
 	button .t.b -text "Select" \
-			-command "Sel_Arq "
+			-command "Sel_Arq var"
 	place .t.b -x 20 -y 30
 
 	button .t.b1 -text "Cancel" \
@@ -147,12 +149,16 @@ proc Sel_Arq {  } {
 			{{Text Files}       {.txt}        }
 		}
     set file [tk_getOpenFile -multiple 0 -filetypes $types -parent .]
-   .t.l configure -state disabled  
+  
 	set i 0
 	set x 100
 	
 	foreach j $file {
 		incr i
+		 if [winfo exists .t.l$i] {
+			destroy .t.l$i
+			destroy .t.b2
+		}
 		set y [expr {$i*20 + 40}]
 		label .t.l$i -text $j
 		place .t.l$i -x 20 -y $y
@@ -329,7 +335,7 @@ proc Metadados {} {
 							
 							close $outfile
 							
-							#teste
+							
 							exec zip package.zip $descriptor
 							file delete -force -- $descriptor
 							tk_messageBox -message "Package creation was sucessful!" -type ok
