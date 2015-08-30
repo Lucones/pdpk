@@ -329,7 +329,7 @@ proc Metadados {} {
 							
 							close $outfile
 							
-							
+							#teste
 							exec zip package.zip $descriptor
 							file delete -force -- $descriptor
 							tk_messageBox -message "Package creation was sucessful!" -type ok
