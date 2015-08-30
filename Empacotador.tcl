@@ -12,13 +12,13 @@ package require Tk
 	menu .menubar
 	menu .menubar.pdpk -tearoff 0
 	.menubar add cascade -label PDPK -menu .menubar.pdpk -underline 0
-	.menubar.pdpk add command -label {Criar Pacote} \
+	.menubar.pdpk add command -label {Create Package} \
 		 -command Criar
-	.menubar.pdpk add command -label {Instalar Extensão} \
+	.menubar.pdpk add command -label {Install External} \
 		-command Instalar
-	.menubar.pdpk add command -label {Adicionar ao Repositório} \
+	.menubar.pdpk add command -label {Add to repository} \
 		-command Add_Rep
-	.menubar.pdpk add command -label {Sobre ...} \
+	.menubar.pdpk add command -label {About ...} \
 		-accelerator F1 -underline 0 -command Sobre
 		
 	#  Configuração do menu
@@ -29,7 +29,7 @@ package require Tk
 
 
 proc Sobre {} {
-    tk_messageBox -message "pdpk versão 1.0" \
+    tk_messageBox -message "pdpk version 1.0" \
         -title {Sobre}
 }
 #Função para instalar pacotes
@@ -71,7 +71,7 @@ proc Sel_Arq { } {
 		#Ativa o botão para continuar caso selecionado arquivos
 		button .t.b2 -text "OK" \
 			-command Sel_Doc
-		place .t.b2 -x 230 -y [expr {$i*20 + $x }]
+		place .t.b2 -x 220 -y [expr {$i*20 + $x }]
 	}
 }
 
@@ -80,7 +80,7 @@ proc Criar {} {
 
 	tk::toplevel .t
 	set oldtitle [wm title .t]
-	wm title .t "Criar Pacote"
+	wm title .t "Create Package"
 	wm resizable .t 1 1 
 	.t configure -height 160
 	.t configure -width  300
@@ -90,17 +90,17 @@ proc Criar {} {
 	wm geometry  .t +$x+$y
 	wm transient .t .
 
-	label .t.l99 -text "Selecione o(s) arquivo(s)"
-	place .t.l99 -x 40 -y 5
+	label .t.l99 -text "Select the Pure Date externals file(s)"
+	place .t.l99 -x 30 -y 5
 
 	label .t.l -text "..."
 	place .t.l -x 20 -y 60
 
-	button .t.b -text "Selecionar" \
+	button .t.b -text "Select" \
 			-command "Sel_Arq "
 	place .t.b -x 20 -y 30
 
-	button .t.b1 -text "Cancelar" \
+	button .t.b1 -text "Cancel" \
 			-command {Cancelar .t}
 	place .t.b1 -x 140 -y 120
 
@@ -112,12 +112,10 @@ proc Cancelar { .t } {
 }
 
 proc Sel_Doc {} {
-		# set tl [toplevel .someNameOrOther]
-		#set frm [ttk::frame $tl.myFrame]
 		destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
-	wm title .t "Criar Pacote"
+	wm title .t "Create Package"
 	wm resizable .t 1 1 
 	.t configure -height 160
 	.t configure -width  300
@@ -127,17 +125,17 @@ proc Sel_Doc {} {
 	wm geometry  .t +$x+$y
 	wm transient .t .
 
-	label .t.l99 -text "Selecione a Documentacao de usuario"
-	place .t.l99 -x 40 -y 5
+	label .t.l99 -text "Select the user documentation file"
+	place .t.l99 -x 30 -y 5
 
 	label .t.l -text "..."
 	place .t.l -x 20 -y 60
 
-	button .t.b -text "Selecionar" \
+	button .t.b -text "Select" \
 			-command "Sel_Arq "
 	place .t.b -x 20 -y 30
 
-	button .t.b1 -text "Cancelar" \
+	button .t.b1 -text "Cancel" \
 			-command {Cancelar .t}
 	place .t.b1 -x 140 -y 120
 
@@ -185,7 +183,7 @@ proc Sel_Arq {  } {
 		#Ativa o botão para continuar caso selecionado arquivos
 		button .t.b2 -text "OK" \
 		-command "Metadados "
-		place .t.b2 -x 230 -y [expr {$i*20 + $x }]
+		place .t.b2 -x 220 -y [expr {$i*20 + $x }]
 	}
 	
 }
@@ -199,7 +197,7 @@ proc Metadados {} {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
-	wm title .t "Criar Pacote"
+	wm title .t "Create Package"
 	wm resizable .t 1 1 
 	.t configure -height 460
 	.t configure -width  300
@@ -209,7 +207,7 @@ proc Metadados {} {
 	wm geometry  .t +$x+$y
 	wm transient .t .
 
-	label .t.lbl1 -text "Preencha os dados indicados"
+	label .t.lbl1 -text "Fill all the blanks"
 	place .t.lbl1 -x 80 -y 5
 	
 	label .t.lbl2 -text "* = optional"
@@ -236,13 +234,13 @@ proc Metadados {} {
 	entry .t.versioni -validate key -vcmd {string is double %P}
 	place .t.versioni -x 110 -y 90	
 	
-    labelframe .t.lbl -text "Architecture" -padx 0 
+    labelframe .t.lbl -text "Supported Architectures" -padx 0 
 	checkbutton .t.c1 -text "Windows x86"  -variable win32
 	checkbutton .t.c2 -text "Windows x64" -variable win64
 	checkbutton .t.c3 -text "Linux" -variable linux 
 	checkbutton .t.c4 -text "MacFag" -variable mac  
 	pack .t.c1 .t.c2 .t.c3  .t.c4 -in .t.lbl -anchor w	
-	place .t.lbl -x 120 -y 115
+	place .t.lbl -x 110 -y 115
 	
 	label .t.license -text "License"
 	place .t.license -x 20 -y 230
@@ -274,14 +272,14 @@ proc Metadados {} {
 	entry .t.conflictsi 
 	place .t.conflictsi -x 110 -y 330
 	
-	button .t.b1 -text "Cancelar" \
+	button .t.b1 -text "Cancel" \
 			-command {Cancelar .t}
 	place .t.b1 -x 80 -y 400
     
 		
 		
 		
-		button .t.b -text "Criar Pacote" \
+		button .t.b -text "Create Package" \
 				-command {
 					set name [.t.namei get]
 					set sum [.t.sumi get]
@@ -293,34 +291,59 @@ proc Metadados {} {
 					set description [.t.descriptioni get]
 					set dependecies [.t.dependeciesi get]
 					set conflicts [.t.conflictsi get]
-					if { $name ne "" && $sum ne "" && $author ne "" && $version ne "" && $license ne "" && $type ne "" && $source ne "" && $description ne ""} {
-						set descriptor "Descriptor.txt"
-						set outfile [open "Descriptor.txt" w]
-						
-						puts $outfile "Name: $name "
-						puts $outfile "Summary: $sum "
-						puts $outfile "Author: $author "
-						puts $outfile "Version: $version "
-						puts $outfile "License: $license "
-						puts $outfile "Type: $type "
-						puts $outfile "Source: $source "
-						puts $outfile "Description: $description "
-						puts $outfile "Dependecies: $dependecies "
-						puts $outfile "Conflicts: $conflicts "
-						
-						close $outfile
-						
-						
-						exec zip package.zip $descriptor
-						file delete -force -- $descriptor
-						tk_messageBox -message "Pacote criado com sucesso!" -type ok
-						destroy .t
-				
+
+					set arch ""
+					if { $win64 == 1 } {
+						append arch "Windows 64. "
+					}
+					if { $win32 == 1 } {
+						append arch "Windows 32. "
+					}
+					if { $linux == 1 } {
+						append arch "Linux. "
+					}
+					if { $mac == 1 } {
+						append arch "Mac. "
+					}
+					
+					puts $arch
+					
+					if { $name ne "" && $sum ne "" && $author ne "" && $version ne "" && $license ne "" && $type ne "" && $source ne "" && $description ne "" } {
+						if { $win32 == 1 || $win64 == 1 || $linux == 1 || $mac == 1 } {
+							set descriptor "Descriptor.txt"
+							set outfile [open "Descriptor.txt" w]
+							set systemTime [clock seconds] 
+							
+							puts $outfile "Name: $name "
+							puts $outfile "Summary: $sum "
+							puts $outfile "Author: $author "
+							puts $outfile "Version: $version "
+							puts $outfile "Supported Architectures: $arch "
+							puts $outfile "Date: [clock format $systemTime -format %D]"
+							puts $outfile "License: $license "
+							puts $outfile "Type: $type "
+							puts $outfile "Source: $source "
+							puts $outfile "Description: $description "
+							puts $outfile "Dependecies: $dependecies "
+							puts $outfile "Conflicts: $conflicts "
+							
+							close $outfile
+							
+							
+							exec zip package.zip $descriptor
+							file delete -force -- $descriptor
+							tk_messageBox -message "Package creation was sucessful!" -type ok
+							destroy .t
+					
+							} else {
+								tk_messageBox -message "Please fill all the blanks!" -type ok
+							}
+					
 					} else {
-						tk_messageBox -message "Please fill all the data!" -type ok
+						tk_messageBox -message "Please fill all the blanks!" -type ok
 					}
 					}
-		place .t.b -x 170 -y 400
+		place .t.b -x 160 -y 400
 	
 	
 	
