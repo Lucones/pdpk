@@ -1,7 +1,7 @@
 #! /bin/env tclsh
 
 package require Tk
-
+package provide Empacotador
 	#  Janela principal
 	message .m  -background #C0C0C0
 	pack .m -expand true -fill both -ipadx 200 -ipady 100
@@ -48,12 +48,21 @@ proc Sel_Arq { varname } {
 	set file [tk_getOpenFile -multiple 1 -filetypes $types -parent .]
 	set i 0
 	set x 100
-	
+	set len1 0
 	foreach j $file {
 		incr i
 		 if [winfo exists .t.l$i] {
 			destroy .t.l$i
 			destroy .t.b2
+		}
+		set len [string length $j]
+	
+		if { $len > 40 } {
+			if {$len > $len1 } {
+				set len1 $len
+				set len2 [expr {$len1 - 40}]
+				.t configure -width [expr {300 + 8 * $len2}]
+			}
 		}
 		set y [expr {$i*20 + 40}]
 		label .t.l$i -text $j
@@ -153,18 +162,21 @@ proc Sel_Arq {  } {
 	set i 0
 	set x 100
 	
-	foreach j $file {
-		incr i
+	set len [string length $file]
+	if { $len > 40 } {
+		set len1 [expr {$len - 40}]
+		.t configure -width [expr {300 + 8 * $len1}]
+	}
+	
+	
 		 if [winfo exists .t.l$i] {
 			destroy .t.l$i
 			destroy .t.b2
 		}
-		set y [expr {$i*20 + 40}]
-		label .t.l$i -text $j
-		place .t.l$i -x 20 -y $y
-		.t configure -height [expr {$i*20 + $x + 40}]
-		place .t.b1 -x 140 -y [expr {$i*20 + $x}]
-	}
+		
+		label .t.l$i -text $file
+		place .t.l$i -x 20 -y 60
+	
 	
 	destroy .t.l
 
@@ -189,7 +201,7 @@ proc Sel_Arq {  } {
 		#Ativa o botão para continuar caso selecionado arquivos
 		button .t.b2 -text "OK" \
 		-command "Metadados "
-		place .t.b2 -x 220 -y [expr {$i*20 + $x }]
+		place .t.b2 -x 220 -y 120
 	}
 	
 }
@@ -300,16 +312,16 @@ proc Metadados {} {
 
 					set arch ""
 					if { $win64 == 1 } {
-						append arch "Windows 64. "
+						append arch "Windows 64 "
 					}
 					if { $win32 == 1 } {
-						append arch "Windows 32. "
+						append arch "Windows 32 "
 					}
 					if { $linux == 1 } {
-						append arch "Linux. "
+						append arch "Linux "
 					}
 					if { $mac == 1 } {
-						append arch "Mac. "
+						append arch "Mac "
 					}
 					
 					puts $arch
@@ -338,6 +350,10 @@ proc Metadados {} {
 							
 							exec zip package.zip $descriptor
 							file delete -force -- $descriptor
+							regsub -all {\s} $name {_} finalname
+							regsub -all {\s} $arch {_} finalarch
+							regsub -all {\s} $version {_} finalversion
+							file rename -force -- "package.zip" "$finalname-$version-$finalarch.pdpk"
 							tk_messageBox -message "Package creation was sucessful!" -type ok
 							destroy .t
 					
