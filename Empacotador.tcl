@@ -361,7 +361,7 @@ proc Metadados {} {
 							set dir [tk_chooseDirectory \
 								-initialdir ~ -title "Choose the destination folder"]
 								
-								file copy $newfile $dir
+								file copy -force -- $newfile $dir
 								file delete -force -- $newfile
 							tk_messageBox -message "Package created sucessfully!" -type ok	
 							} else {
