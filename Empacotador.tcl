@@ -39,7 +39,37 @@ proc Instalar {} {
 proc Add_Rep {} {
 
 }
-proc Sel_Arq { varname } {
+
+#Função para criar pacotes
+proc Criar {} {
+	
+	tk::toplevel .t
+	set oldtitle [wm title .t]
+	wm title .t "Create Package"
+	wm resizable .t 0 0 
+	.t configure -height 160
+	.t configure -width  300
+	update
+	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
+	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
+	wm geometry  .t +$x+$y
+	wm transient .t .
+
+	label .t.l99 -text "Select the Pure Date externals file(s)"
+	place .t.l99 -x 30 -y 5
+
+	label .t.l -text "..."
+	place .t.l -x 20 -y 60
+
+	button .t.b -text "Select" \
+			-command "Sel_Arq var"
+	place .t.b -x 20 -y 30
+
+	button .t.b1 -text "Cancel" \
+			-command {Cancelar .t}
+	place .t.b1 -x 140 -y 120
+	
+	proc Sel_Arq { varname } {
 		
 	set types {
 		{{PD Externals}       *        }
@@ -85,35 +115,6 @@ proc Sel_Arq { varname } {
 		place .t.b2 -x 220 -y [expr {$i*20 + $x }]
 	}
 }
-
-#Função para criar pacotes
-proc Criar {} {
-	
-	tk::toplevel .t
-	set oldtitle [wm title .t]
-	wm title .t "Create Package"
-	wm resizable .t 1 1 
-	.t configure -height 160
-	.t configure -width  300
-	update
-	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
-	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
-	wm geometry  .t +$x+$y
-	wm transient .t .
-
-	label .t.l99 -text "Select the Pure Date externals file(s)"
-	place .t.l99 -x 30 -y 5
-
-	label .t.l -text "..."
-	place .t.l -x 20 -y 60
-
-	button .t.b -text "Select" \
-			-command "Sel_Arq var"
-	place .t.b -x 20 -y 30
-
-	button .t.b1 -text "Cancel" \
-			-command {Cancelar .t}
-	place .t.b1 -x 140 -y 120
 
  
 }
@@ -324,7 +325,7 @@ proc Metadados {} {
 						append arch "Mac "
 					}
 					
-					puts $arch
+					
 					
 					if { $name ne "" && $sum ne "" && $author ne "" && $version ne "" && $license ne "" && $type ne "" && $source ne "" && $description ne "" } {
 						if { $win32 == 1 || $win64 == 1 || $linux == 1 || $mac == 1 } {
@@ -354,9 +355,15 @@ proc Metadados {} {
 							regsub -all {\s} $arch {_} finalarch
 							regsub -all {\s} $version {_} finalversion
 							file rename -force -- "package.zip" "$finalname-$version-$finalarch.pdpk"
-							tk_messageBox -message "Package creation was sucessful!" -type ok
+							set newfile "$finalname-$version-$finalarch.pdpk"
+							tk_messageBox -message "Please, select the destination folder" -type ok
 							destroy .t
-					
+							set dir [tk_chooseDirectory \
+								-initialdir ~ -title "Choose the destination folder"]
+								
+								file copy $newfile $dir
+								file delete -force -- $newfile
+							tk_messageBox -message "Package created sucessfully!" -type ok	
 							} else {
 								tk_messageBox -message "Please fill all the blanks!" -type ok
 							}
@@ -370,3 +377,4 @@ proc Metadados {} {
 	
 	
 }
+
