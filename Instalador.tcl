@@ -66,7 +66,7 @@ proc Sel_Arq { } {
 			{{Pure Data package files}       {.pdpk}        }
 		}
     set file [tk_getOpenFile -multiple 0 -filetypes $types -parent .]
-	puts [string length $file]
+	
 	set len [string length $file]
 	if { $len > 40 } {
 		set len1 [expr {$len - 40}]
@@ -82,11 +82,32 @@ proc Sel_Arq { } {
 	
 		
 	if {$file ne ""} {
-		exec unzip -d "/home/lukaz/Documentos/pdpk/temp" $file
+		
 		#Ativa o botão para continuar caso selecionado arquivos
 		button .t.b2 -text "OK" \
-		-command "Metadados "
+		-command "Extrair $file"
 		place .t.b2 -x 220 -y 120
 	}
 	
+}
+proc Extrair { filer } {
+	
+		file mkdir "bar"
+		set dir1 "bar"
+		
+		exec unzip $filer -d $dir1
+		
+		
+		set dir ""
+		set answer [tk_messageBox -message "Please, select the installation folder" -type okcancel]
+			switch -- $answer {
+			   ok { set dir [tk_chooseDirectory \
+        -initialdir "~/pd-externals" -title "Choose an installation directory"] }
+        
+			   cancel { Cancelar .t}
+			 }
+		if { $dir ne "" } {
+			file copy -force -- $dir1 $dir
+			file delete -force -- $dir1
+		}
 }
