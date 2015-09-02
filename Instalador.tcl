@@ -92,22 +92,36 @@ proc Sel_Arq { } {
 }
 proc Extrair { filer } {
 	
-		file mkdir "bar"
-		set dir1 "bar"
+		set file [ file tail $filer ]
+		regsub -all ".pdpk" $file {} finalname
 		
-		exec unzip $filer -d $dir1
+		file mkdir $finalname
+		exec unzip $filer -d $finalname
 		
+		#exec unzip $filer -d $dir1
+		file rename -force -- "$finalname/Descriptor.txt" "$finalname-Descriptor.txt"
+		file rename -force -- "$finalname/Documentation/Documentation.txt" "$finalname-Documentation.txt"
 		
 		set dir ""
 		set answer [tk_messageBox -message "Please, select the installation folder" -type okcancel]
 			switch -- $answer {
 			   ok { set dir [tk_chooseDirectory \
         -initialdir "~/pd-externals" -title "Choose an installation directory"] }
-        
 			   cancel { Cancelar .t}
 			 }
 		if { $dir ne "" } {
-			file copy -force -- $dir1 $dir
-			file delete -force -- $dir1
+			
+			file copy -force -- "$finalname-Descriptor.txt" $dir 
+			set dir1 "$dir/Documentation/"
+			if {![file isdirectory $dir1]} {			  
+			  file mkdir $dir1
+			}
+			file copy -force -- "$finalname-Documentation.txt" $dir1
+			file delete -force -- "$finalname/Documentation/"
+			file copy -force -- "$finalname" $dir
+			file delete -force -- "$finalname-Descriptor.txt"
+			file delete -force -- "$finalname"
+			file delete -force -- "$finalname-Documentation.txt"
+
 		}
 }
