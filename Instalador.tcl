@@ -64,18 +64,21 @@ proc Sel_Arq { } {
 	
 	set types {
 			{{Pure Data package files}       {.pdpk}        }
-		}
+	}
     set file [tk_getOpenFile -multiple 0 -filetypes $types -parent .]
+	
 	
 	set len [string length $file]
 	if { $len > 40 } {
 		set len1 [expr {$len - 40}]
 		.t configure -width [expr {300 + 8 * $len1}]
 	}
+	
 	if [winfo exists .t.l1] {
 			destroy .t.l1
 			destroy .t.b2
 	}
+	
 	label .t.l1 -text $file
 	place .t.l1 -x 20 -y 60
 	destroy .t.l
@@ -92,36 +95,67 @@ proc Sel_Arq { } {
 }
 proc Extrair { filer } {
 	
+		#Verifica a existência da pasta /pd-externals, caso não exista ela será criada
+		if {![file isdirectory "~/pd-externals"]} {			  
+			  file mkdir "~/pd-externals"
+		}
+		
+		#indica qual o diretório serão instalados os arquivos
+		set dir "~/pd-externals"
+		
+		#Tira o caminho e a extensão do arquivo para que usemos apenas o nome do mesmo	
 		set file [ file tail $filer ]
 		regsub -all ".pdpk" $file {} finalname
 		
-		file mkdir $finalname
-		exec unzip $filer -d $finalname
-		
-		#exec unzip $filer -d $dir1
-		file rename -force -- "$finalname/Descriptor.txt" "$finalname-Descriptor.txt"
-		file rename -force -- "$finalname/Documentation/Documentation.txt" "$finalname-Documentation.txt"
-		
-		set dir ""
-		set answer [tk_messageBox -message "Please, select the installation folder" -type okcancel]
-			switch -- $answer {
-			   ok { set dir [tk_chooseDirectory \
-        -initialdir "~/pd-externals" -title "Choose an installation directory"] }
-			   cancel { Cancelar .t}
-			 }
-		if { $dir ne "" } {
+		#Verifica se ja existe um diretório de mesmo nome, indicando que o pacote ja foi instalado previamente
+		if {![file isdirectory "~/pd-externals/$finalname"]} {	
 			
+			#Cria uma pasta temporária e extrai os arquivos nela		
+			file mkdir $finalname
+			exec unzip $filer -d $finalname
+			
+			#Renomeia os arquivos para que seja feita a devida identificação
+			file rename -force -- "$finalname/Descriptor.txt" "$finalname-Descriptor.txt"
+			file rename -force -- "$finalname/Documentation/Documentation.txt" "$finalname-Documentation.txt"
+				
+			#Adiciona o horário do sistema no descritor, indicando a hora e data da instalação
+			set descriptor "$finalname-Descriptor.txt"
+			set outfile [open "$finalname-Descriptor.txt" a]
+			set systemTime [clock seconds] 	
+			puts $outfile "Date Installed: [clock format $systemTime -format %D-%T]"							
+			close $outfile
+				
+				
+			#Copia o descritor temporário renomeado e com a data de instalação para a pasta de externals	
 			file copy -force -- "$finalname-Descriptor.txt" $dir 
-			set dir1 "$dir/Documentation/"
+			
+			#Verifica se ja existe uma pasta "Documentation" que irá conter as documentações de todos os externals instalados
+			#Caso não exista, uma será criada
+			set dir1 "$dir/Documentation/"			
 			if {![file isdirectory $dir1]} {			  
 			  file mkdir $dir1
 			}
+			
+			#Copia a Documentação temporária renomeada para a pasta "Documentation" dentro da pasta externals
+			#Deleta a documentação temporária
 			file copy -force -- "$finalname-Documentation.txt" $dir1
 			file delete -force -- "$finalname/Documentation/"
+			
+			#Copia a pasta temporária contendo apenas o arquivo de plugin para a pasta externals
+			#Deleta todos os arquivos temporários
 			file copy -force -- "$finalname" $dir
 			file delete -force -- "$finalname-Descriptor.txt"
 			file delete -force -- "$finalname"
 			file delete -force -- "$finalname-Documentation.txt"
-
-		}
+			
+			#Mensagem de sucesso e a tela é destruída	
+			tk_messageBox -message "External installed sucessfully!" -type ok
+			destroy .t
+			
+		} else {
+			#Indica que ja existe um external de mesmo nome já instalado
+			tk_messageBox -message "External already installed" -type ok
+		}	
+		
+			
 }

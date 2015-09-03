@@ -75,7 +75,7 @@ proc Criar {} {
 		{{PD Externals}       *        }
 	}
 		
-	set file [tk_getOpenFile -multiple 1 -filetypes $types -parent .]
+	set file [tk_getOpenFile -initialdir ~ -multiple 1 -filetypes $types -parent .]
 	set i 0
 	set x 100
 	set len1 0
@@ -158,7 +158,7 @@ proc Sel_Arq {  } {
     set types {
 			{{Text Files}       {.txt}        }
 		}
-    set file [tk_getOpenFile -multiple 0 -filetypes $types -parent .]
+    set file [tk_getOpenFile -initialdir ~ -multiple 0 -filetypes $types -parent .]
   
 	set i 0
 	set x 100
@@ -337,8 +337,8 @@ proc Metadados {} {
 							puts $outfile "Summary: $sum "
 							puts $outfile "Author: $author "
 							puts $outfile "Version: $version "
-							puts $outfile "Supported Architectures: $arch "
-							puts $outfile "Date: [clock format $systemTime -format %D]"
+							puts $outfile "Supported Architectures: $arch "						
+							puts $outfile "Date Created: [clock format $systemTime -format %D]"
 							puts $outfile "License: $license "
 							puts $outfile "Type: $type "
 							puts $outfile "Source: $source "
@@ -352,17 +352,23 @@ proc Metadados {} {
 							exec zip package.zip $descriptor
 							file delete -force -- $descriptor
 							regsub -all {\s} $name {_} finalname
-							regsub -all {\s} $arch {_} finalarch
+							regsub -all {\s} $arch {_} finalarch 
 							regsub -all {\s} $version {_} finalversion
 							file rename -force -- "package.zip" "$finalname-$version-$finalarch.pdpk"
+							puts "$finalname-$version-$finalarch.pdpk"
 							set newfile "$finalname-$version-$finalarch.pdpk"
+							regsub -all {_.pdpk} $newfile {.pdpk} finalnewfile
+							puts "$finalnewfile"
+							file rename -force -- $newfile $finalnewfile
+							#puts $newfile
 							tk_messageBox -message "Please, select the destination folder" -type ok
 							destroy .t
 							set dir [tk_chooseDirectory \
 								-initialdir ~ -title "Choose the destination folder"]
 								
-								file copy -force -- $newfile $dir
-								file delete -force -- $newfile
+								file copy -force -- $finalnewfile $dir
+								
+								file delete -force -- $finalnewfile
 							tk_messageBox -message "Package created sucessfully!" -type ok	
 							} else {
 								tk_messageBox -message "Please fill all the blanks!" -type ok
