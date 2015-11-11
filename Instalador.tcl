@@ -65,31 +65,40 @@ proc Sel_Arq { } {
 	set types {
 			{{Pure Data package files}       {.pdpk}        }
 	}
-    set file [tk_getOpenFile -multiple 0 -filetypes $types -parent .]
+    set file [tk_getOpenFile -multiple 1 -filetypes $types -parent .]
+		
+	set i 0
+	set x 100
+	set len1 0
 	
-	
-	set len [string length $file]
-	if { $len > 40 } {
-		set len1 [expr {$len - 40}]
-		.t configure -width [expr {300 + 8 * $len1}]
-	}
-	
-	if [winfo exists .t.l1] {
-			destroy .t.l1
+	foreach j $file {
+		incr i
+		 if [winfo exists .t.l$i] {
+			destroy .t.l$i
 			destroy .t.b2
+		}
+		set len [string length $j]
+	
+		if { $len > 40 } {
+			if {$len > $len1 } {
+				set len1 $len
+				set len2 [expr {$len1 - 40}]
+				.t configure -width [expr {300 + 8 * $len2}]
+			}
+		}
+		set y [expr {$i*20 + 40}]
+		label .t.l$i -text $j
+		place .t.l$i -x 20 -y $y
+		.t configure -height [expr {$i*20 + $x + 40}]
+		place .t.b1 -x 140 -y [expr {$i*20 + $x}]
 	}
-	
-	label .t.l1 -text $file
-	place .t.l1 -x 20 -y 60
-	destroy .t.l
-	
 		
 	if {$file ne ""} {
-		
+		puts $file
 		#Ativa o botão para continuar caso selecionado arquivos
 		button .t.b2 -text "OK" \
 		-command "Extrair $file"
-		place .t.b2 -x 220 -y 120
+		place .t.b2 -x 220 -y [expr {$i*20 + $x }]
 	}
 	
 }
@@ -116,13 +125,13 @@ proc Extrair { filer } {
 			
 			#Renomeia os arquivos para que seja feita a devida identificação
 			file rename -force -- "$finalname/Descriptor.txt" "$finalname-Descriptor.txt"
-			file rename -force -- "$finalname/Documentation/Documentation.txt" "$finalname-Documentation.txt"
+			#file rename -force -- "$finalname/Documentation/Documentation.txt" "$finalname-Documentation.txt"
 				
 			#Adiciona o horário do sistema no descritor, indicando a hora e data da instalação
 			set descriptor "$finalname-Descriptor.txt"
-			set outfile [open "$finalname-Descriptor.txt" a]
+			set outfile [open "$finalname-Descriptor.txt" a+]
 			set systemTime [clock seconds] 	
-			puts $outfile "Date Installed: [clock format $systemTime -format %D-%T]"							
+			puts $outfile "Date Installed: [clock format $systemTime -format %D] - [clock format $systemTime -format %H:%M:%S]"							
 			close $outfile
 				
 				
@@ -131,22 +140,22 @@ proc Extrair { filer } {
 			
 			#Verifica se ja existe uma pasta "Documentation" que irá conter as documentações de todos os externals instalados
 			#Caso não exista, uma será criada
-			set dir1 "$dir/Documentation/"			
-			if {![file isdirectory $dir1]} {			  
-			  file mkdir $dir1
-			}
+			#set dir1 "$dir/Documentation/"			
+		#	if {![file isdirectory $dir1]} {			  
+		#	  file mkdir $dir1
+		#	}
 			
 			#Copia a Documentação temporária renomeada para a pasta "Documentation" dentro da pasta externals
 			#Deleta a documentação temporária
-			file copy -force -- "$finalname-Documentation.txt" $dir1
-			file delete -force -- "$finalname/Documentation/"
+			#file copy -force -- "$finalname-Documentation.txt" $dir1
+			#file delete -force -- "$finalname/Documentation/"
 			
 			#Copia a pasta temporária contendo apenas o arquivo de plugin para a pasta externals
 			#Deleta todos os arquivos temporários
 			file copy -force -- "$finalname" $dir
 			file delete -force -- "$finalname-Descriptor.txt"
 			file delete -force -- "$finalname"
-			file delete -force -- "$finalname-Documentation.txt"
+			#file delete -force -- "$finalname-Documentation.txt"
 			
 			#Mensagem de sucesso e a tela é destruída	
 			tk_messageBox -message "External installed sucessfully!" -type ok
