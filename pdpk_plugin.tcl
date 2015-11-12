@@ -4,7 +4,7 @@
  package require http
  package require tls
  
-package provide Empacotador
+
 	#  Janela principal
 	message .m  -background #C0C0C0
 	pack .m -expand true -fill both -ipadx 200 -ipady 100
