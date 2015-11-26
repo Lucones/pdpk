@@ -4,34 +4,31 @@
  package require http
  package require tls
  
-package provide Empacotador
-	#  Janela principal
-	message .m  -background #C0C0C0
-	pack .m -expand true -fill both -ipadx 200 -ipady 100
-	set var 0
-	set finalnewfile 0
-	global flag
-	set flag {0}
-	#  Barra de menu
-	menu .menubar
+package provide pdpk_plugin 0.1
+
+namespace eval ::pdpk_plugin:: {
+    namespace export menu_add_create_plugin
+}
+
+proc ::pdpk_plugin::Menu { } {
 	menu .menubar.pdpk -tearoff 0
 	.menubar add cascade -label PDPK -menu .menubar.pdpk -underline 0
 	.menubar.pdpk add command -label {Create Package} \
-		 -command Criar
+		 -command ::pdpk_plugin::Criar
 	.menubar.pdpk add command -label {Remove Package} \
-		 -command Remover
+		 -command ::pdpk_plugin::Remover
 	.menubar.pdpk add command -label {Install External} \
-		-command Instalar
+		-command ::pdpk_plugin::Instalar
 	.menubar.pdpk add command -label {Uninstall External} \
-		-command Desinstalar
+		-command ::pdpk_plugin::Desinstalar
 	.menubar.pdpk add command -label {Create Repository} \
-		-command RepType
+		-command ::pdpk_plugin::RepType
 	.menubar.pdpk add command -label {Download Packages} \
-		-command Download
+		-command ::pdpk_plugin::Download
 	.menubar.pdpk add command -label {Check for Updates} \
-		-command Atualizar
+		-command ::pdpk_plugin::Atualizar
 	.menubar.pdpk add command -label {About ...} \
-		-accelerator F1 -underline 0 -command Sobre
+		-accelerator F1 -underline 0 -command ::pdpk_plugin::Sobre
 		
 	#  Configuração do menu
 	wm title . {Hello Foundation Application}
@@ -39,26 +36,26 @@ package provide Empacotador
 
 	bind . {<Key F1>} {Sobre}
 
+}
 
-
-proc Sobre {} {
+proc ::pdpk_plugin::Sobre {} {
     tk_messageBox -message "pdpk version 1.0" \
         -title {Sobre}
 }
 #Função para instalar pacotes
-proc Instalar {} {
+proc ::pdpk_plugin::Instalar {} {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
 	wm title .t "Install Package"
 	wm resizable .t 0 0 
 	.t configure -height 400
-	.t configure -width  800
+	.t configure -width  500
 	update
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 
 					frame .t.frm
 					labelframe .t.frm.lbf -text "Select the Package(s)" -padx 0 -width 57
@@ -110,11 +107,11 @@ proc Instalar {} {
 					
 					grid .t.frm1 -in .t.frm.lbf
 					
-					button .t.b1 -text "Cancel" \
-							-command {Cancelar .t}
-					place .t.b1 -x 40 -y 320
+					button .t.b1 -text "Cancel" -width 17 -height 4\
+							-command {::pdpk_plugin::Cancelar .t}
+					place .t.b1 -x 40 -y 290
 	
-					button .t.b2 -text "Install Package(s)" \
+					button .t.b2 -text "Install Package(s)" -width 17 -height 4\
 							-command {
 								set file [.t.frm.lbf.mlb getcolumns 0]
 				
@@ -168,21 +165,21 @@ proc Instalar {} {
 								
 								
 							}
-					place .t.b2 -x 140 -y 320		
+					place .t.b2 -x 280 -y 290		
 }
-proc Desinstalar { } {
+proc ::pdpk_plugin::Desinstalar { } {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
-	wm title .t "Install Package"
+	wm title .t "Uninstall Package"
 	wm resizable .t 0 0 
 	.t configure -height 400
-	.t configure -width  800
+	.t configure -width  500
 	update
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 
 					frame .t.frm
 					labelframe .t.frm.lbf -text "Select the External(s) you wish to uninstall" -padx 0 -width 57
@@ -247,11 +244,11 @@ proc Desinstalar { } {
 						}
 															
 										
-					button .t.b1 -text "Cancel" \
-							-command {Cancelar .t}
-					place .t.b1 -x 40 -y 320
+					button .t.b1 -text "Cancel" -width 17 -height 4\
+							-command {::pdpk_plugin::Cancelar .t}
+					place .t.b1 -x 40 -y 290
 					
-					button .t.b2 -text "Uninstall External(s)" \
+					button .t.b2 -text "Uninstall External(s)" -width 17 -height 4\
 							-command {
 								
 								set sele [.t.frm.lbf.mlb curselection]
@@ -271,13 +268,13 @@ proc Desinstalar { } {
 								
 								
 							}
-					place .t.b2 -x 140 -y 320
+					place .t.b2 -x 280 -y 290
 					
 	
 }
 
 #Função para criar pacotes
-proc Criar {} {
+proc ::pdpk_plugin::Criar {} {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
@@ -289,7 +286,7 @@ proc Criar {} {
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+	
 
 	
 
@@ -416,11 +413,11 @@ proc Criar {} {
 	label .t.lbl2 -text "* = optional"
 	pack .t.lbl2 -in .t.lbl1 
 	
-	button .t.b1 -text "Cancel" \
-			-command {Cancelar .t}
-	place .t.b1 -x 40 -y 320
+	button .t.b1 -text "Cancel" -width 17 -height 4\
+			-command {::pdpk_plugin::Cancelar .t}
+	place .t.b1 -x 40 -y 290
 	
-	button .t.b2 -text "Create Package" \
+	button .t.b2 -text "Create Package" -width 17 -height 4\
 			-command {
 				set file [.t.frm.lbf.mlb getcolumns 0]
 				
@@ -492,7 +489,7 @@ proc Criar {} {
 							regsub -all {_.pdpk} $newfile {.pdpk} finalnewfile
 							
 							file rename -force -- $newfile $finalnewfile
-							#puts $newfile
+
 							
 							destroy .t
 							
@@ -521,27 +518,27 @@ proc Criar {} {
 				
 				
 				}
-	place .t.b2 -x 140 -y 320
+	place .t.b2 -x 280 -y 290
 	
  
 }
-proc Remover { } {
+proc ::pdpk_plugin::Remover { } {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
-	wm title .t "Install Package"
+	wm title .t "Remove Package"
 	wm resizable .t 0 0 
 	.t configure -height 400
-	.t configure -width  800
+	.t configure -width  500
 	update
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 
 					frame .t.frm
 					labelframe .t.frm.lbf -text "Select the Package(s) you wish to Remove" -padx 0 -width 57
-					tablelist::tablelist .t.frm.lbf.mlb -selectmode multiple -columns {0 "External"} \
+					tablelist::tablelist .t.frm.lbf.mlb -selectmode multiple -columns {0 "Package"} \
 					-stretch all -background white -width 57 -xscroll {.t.frm.lbf.h set} -yscroll {.t.frm.lbf.v set}  -showseparators true 					
 
 					scrollbar .t.frm.lbf.v -orient vertical   -command {.t.frm.lbf.mlb yview}
@@ -585,11 +582,11 @@ proc Remover { } {
 								.t.frm.lbf.mlb insert end [list "$file"]
 						}
 					
-					button .t.b1 -text "Cancel" \
-							-command {Cancelar .t}
-					place .t.b1 -x 40 -y 320
+					button .t.b1 -text "Cancel" -width 17 -height 4\
+							-command {::pdpk_plugin::Cancelar .t}
+					place .t.b1 -x 40 -y 290
 					
-					button .t.b2 -text "Remove Package(s)" \
+					button .t.b2 -text "Remove Package(s)" -width 17 -height 4\
 							-command {
 								
 								set sele [.t.frm.lbf.mlb curselection]
@@ -609,17 +606,17 @@ proc Remover { } {
 								
 								
 							}
-					place .t.b2 -x 140 -y 320
+					place .t.b2 -x 280 -y 290
 						
 	
 	
 }
-proc Cancelar { .t } {
+proc ::pdpk_plugin::Cancelar { .t } {
 	destroy .t
 	
 }
 
-proc RepType {} {
+proc ::pdpk_plugin::RepType {} {
 	
 	destroy .t
 	tk::toplevel .t
@@ -632,37 +629,38 @@ proc RepType {} {
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 	
 	labelframe .t.l99 -text "What type of repository do you wish to create?"
 	#place .t.l99 -x 70 -y 5
 	
 	button .t.b -text "Main Repository" -width 50 -height 5\
-			-command { MainRep }
+			-command { ::pdpk_plugin::MainRep }
 	#place .t.b -x 20 -y 30
 
 	button .t.b1 -text "Specific Repository" -width 50 -height 5\
-			-command { SpeRep }
+			-command { ::pdpk_plugin::SpeRep }
 	#place .t.b1 -x 140 -y 120
 	button .t.b2 -text "Cancel" -width 50 -height 5\
-			-command { Cancelar .t }
+			-command { ::pdpk_plugin::Cancelar .t }
 	
 	
 	pack .t.b .t.b1 .t.b2 -in .t.l99 -pady 5
 	pack .t.l99 -in .t -ipadx 20 -ipady 5 -padx 10 -pady 5
 }
 
-proc MainRep { } {
+proc ::pdpk_plugin::MainRep { } {
 	destroy .t
 	set dir "~/pd-externals"
 	file delete -force -- "$dir/Descriptor.txt"
 	
-	if { ![file exist "$dir/RepositoryDescriptor.txt"] } {
+	if { ![file exist "$dir/pdpk-mainrepo/RepositoryDescriptor.txt"] } {
+					file mkdir "$dir/pdpk-mainrepo"
 						set root "~/"
 						set owner [file tail $root]
 
-						set RepDes "$dir/RepositoryDescriptor.txt"
-						set outfile [open "$dir/RepositoryDescriptor.txt" w]
+						set RepDes "$dir/pdpk-mainrepo/RepositoryDescriptor.txt"
+						set outfile [open "$dir/pdpk-mainrepo/RepositoryDescriptor.txt" w]
 						set systemTime [clock seconds]
 									
 						puts $outfile "Owner: $owner "
@@ -673,7 +671,7 @@ proc MainRep { } {
 		set answer [tk_messageBox -message "There is already a Main Repository\nWould you like to update it?" -type yesno -icon question]
 				switch -- $answer {
 							yes {
-							set f [open "$dir/RepositoryDescriptor.txt"]
+							set f [open "$dir/pdpk-mainrepo/RepositoryDescriptor.txt"]
 							while {[gets $f line] != -1} {
 								if {[regexp {Owner:\s+(.*)} $line all owner]} {
 								
@@ -683,16 +681,21 @@ proc MainRep { } {
 								}			
 							}		
 							close $f
-							set outfile [open "$dir/RepositoryDescriptor.txt" w]
+							
+							file delete -force -- "$dir/pdpk-mainrepo"
+							file mkdir "$dir/pdpk-mainrepo"
+																			
+																			
+							set outfile [open "$dir/pdpk-mainrepo/RepositoryDescriptor.txt" w]
 								puts $outfile "Owner: $owner "
 								puts $outfile "Date Created: $date "
 							close $outfile	
 						
 							}
-							no exit
+							no return
 						}
 	}
-		set outfile [open "$dir/RepositoryDescriptor.txt" a+]
+		set outfile [open "$dir/pdpk-mainrepo/RepositoryDescriptor.txt" a+]
 			set systemTime [clock seconds]						
 			puts $outfile "Last Modified: [clock format $systemTime -format %D] - [clock format $systemTime -format %H:%M:%S] \n"
 		close $outfile
@@ -755,12 +758,17 @@ proc MainRep { } {
 						
 					}					
 				close $f
-				#file delete -force -- "Descriptor.txt"
-				set outfile [open "$dir/RepositoryDescriptor.txt" a+]
+				
+				set outfile [open "$dir/pdpk-mainrepo/RepositoryDescriptor.txt" a+]
 						puts $outfile "$filename \t/$name \t/$version \t/$author \t/$arch \t/$summary \t/$type \t/$license \t"
-				
+				#set dir1 "~/pd-externals/pdpk-repo"
 				close $outfile
-				
+				regsub -all "/Descriptor.txt" $fils {} filo
+				set filename1 [file rootname $filename]
+				exec zip -r -j package.zip $filo
+				file rename -force -- "package.zip" "$filename1.pdpk"
+				file copy -force -- "$filename1.pdpk" "$dir/pdpk-mainrepo" 							
+				file delete -force -- "$filename1.pdpk"
 				
 			}
 			tk_messageBox -message "Repository Descriptor ready! \nPlease upload to a personal host" -type ok
@@ -770,22 +778,19 @@ proc MainRep { } {
 }
 
 
-
-
-
-proc SpeRep { } {
+proc ::pdpk_plugin::SpeRep { } {
 	destroy .t
 	tk::toplevel .t
 	set oldtitle [wm title .t]
 	wm title .t "Repository Type"
 	wm resizable .t 0 0 
-	.t configure -height 500
+	.t configure -height 450
 	.t configure -width  500
 	update
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 	
 				frame .t.frm
 				labelframe .t.frm.lbf -text "Select the Package(s)" -padx 0 -width 57
@@ -835,11 +840,134 @@ proc SpeRep { } {
 					
 					grid .t.frm1 -in .t.frm.lbf
 					
+					button .t.b1 -text "Cancel" -width 17 -height 4\
+							-command {::pdpk_plugin::Cancelar .t}
+					place .t.b1 -x 40 -y 290
+					
+					button .t.b2 -text "Create Repository" -width 17 -height 4\
+							-command {
+								
+								#set sele [.t.frm.lbf.mlb curselection]
+								set sele [.t.frm.lbf.mlb getcolumns 0]		
+										if { $sele ne "" } {
+											
+											tk_messageBox -message "Please Choose an directory for the repository!" -type ok
+											set dir [tk_chooseDirectory -initialdir "~/"]
+											
+											if { ![file exist "$dir/pdpk-repo/RepositoryDescriptor.txt"] } {
+												file mkdir "$dir/pdpk-repo"
+												set root "~/"
+												set owner [file tail $root]
+
+												set RepDes "$dir/pdpk-repo/RepositoryDescriptor.txt"
+												set outfile [open "$dir/pdpk-repo/RepositoryDescriptor.txt" w]
+												set systemTime [clock seconds]
+															
+												puts $outfile "Owner: $owner "
+												puts $outfile "Date Created: [clock format $systemTime -format %D] - [clock format $systemTime -format %H:%M:%S] "
+											
+												close $outfile												
+												
+											} else {
+												set answer [tk_messageBox -message "There is already a Main Repository\nWould you like to update it?" -type yesno -icon question]
+													switch -- $answer {
+																yes {
+																		set f [open "$dir/pdpk-repo/RepositoryDescriptor.txt"]
+																			while {[gets $f line] != -1} {
+																				if {[regexp {Owner:\s+(.*)} $line all owner]} {
+																				
+																				}
+																				 if {[regexp {Date Created:\s+(.*)} $line all date]} {
+																		
+																				}			
+																			}		
+																			close $f
+																			
+																			file delete -force -- "$dir/pdpk-repo"
+																			file mkdir "$dir/pdpk-repo"
+																			
+																			set outfile [open "$dir/pdpk-repo/RepositoryDescriptor.txt" w]
+																				puts $outfile "Owner: $owner "
+																				puts $outfile "Date Created: $date "
+																			close $outfile	
+																	
+																	}
+																no return
+																}
+												
+											}
+											set outfile [open "$dir/pdpk-repo/RepositoryDescriptor.txt" a+]
+												set systemTime [clock seconds]						
+												puts $outfile "Last Modified: [clock format $systemTime -format %D] - [clock format $systemTime -format %H:%M:%S] \n"
+											close $outfile
+											
+											foreach fils $sele {												
+												set contsele $fils 
+												#[.t.frm.lbf.mlb get $fils]
+												
+												file delete -force -- "Descriptor.txt"	
+												
+												exec unzip -j $contsele "Descriptor.txt"
+												
+												#regsub -all "/Descriptor.txt" $fils {.pdpk} filer												
+												set filename [file tail $contsele]
+												
+												
+												set f [open "Descriptor.txt"]
+													while {[gets $f line] != -1} {
+														if {[regexp {Summary:\s+(.*)} $line all summary]} {
+																regsub -all {\s} $summary {_} summary
+														}
+														 if {[regexp {Type:\s+(.*)} $line all type]} {
+																regsub -all {\s} $type {_} type
+														}
+														if {[regexp {Version:\s+(.*)} $line all version]} {
+																regsub -all {\s} $version {_} version
+														}
+														if {[regexp {Name:\s+(.*)} $line all name]} {
+																	regsub -all {\s} $name {_} name
+														}
+														if {[regexp {Author:\s+(.*)} $line all author]} {
+																	regsub -all {\s} $author {_} author
+														}
+														if {[regexp {License:\s+(.*)} $line all license]} {
+																	regsub -all {\s} $license {_} license
+														}
+														if {[regexp {Supported Architectures:\s+(.*)} $line all arch]} {
+														
+														}
+														
+													}					
+												close $f
+												
+												set outfile [open "$dir/pdpk-repo/RepositoryDescriptor.txt" a+]
+														puts $outfile "$filename \t/$name \t/$version \t/$author \t/$arch \t/$summary \t/$type \t/$license \t"
+												#set dir1 "~/pd-externals/pdpk-repo"
+												close $outfile
+			
+												file copy -force -- $contsele "$dir/pdpk-repo"
+												#file delete -force -- "~/pd-externals/pdpk_packages/$contsele"
+												
+											}
+											
+											tk_messageBox -message "Repository Descriptor ready! \nPlease upload to a personal host" -type ok
+											
+											.t.frm.lbf.mlb deletecolumns 0 
+										} else {
+										 tk_messageBox -message "Please Select the Package(s)!" -type ok
+								}
+								
+								
+							}
+					place .t.b2 -x 280 -y 290
+					
+					
+					
 					
 	
 }
 
-proc Create_Rep {  }  {
+proc ::pdpk_plugin::Create_Rep {  }  {
 
 	destroy .t
 	set ::reptype 0
@@ -854,7 +982,7 @@ proc Create_Rep {  }  {
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 
 	label .t.l99 -text "Select the Repository Folder"
 	place .t.l99 -x 30 -y 5
@@ -911,16 +1039,13 @@ proc Sel_Arq {  } {
 }
 }
 
-				
-		
-		
-		
+	
 
-proc Sel_Rep { dir } {
+proc ::pdpk_plugin::Sel_Rep { dir } {
 	
 	#destroy .t.l
 	set flag 0
-	#puts $dir
+	
 	
 	if { ![file exist "$dir/RepositoryDescriptor.txt"] } {
 		set answer [tk_messageBox -message "This is not a native repository.\n Would you like to make it so?" -type yesno -icon question]
@@ -938,7 +1063,7 @@ proc Sel_Rep { dir } {
 					
 						close $outfile
 					}
-					no exit
+					no return
 				}
 		
 
@@ -963,7 +1088,7 @@ proc Sel_Rep { dir } {
 	set systemTime [clock seconds]
 		
 	puts $outfile "Last Modified: [clock format $systemTime -format %D] - [clock format $systemTime -format %H:%M:%S] \n"
-	#puts $outfile "\nMD5: \t/Name: \t\t/Version: \t/Architectures: \t\t/Summary: \t/Type/Group: "
+
 	
 	close $outfile
 	
@@ -1016,7 +1141,7 @@ foreach fils $fileser {
 tk_messageBox -message "Repository Descriptor ready! \nPlease upload to a personal host" -type ok
 }
 
-proc Download { } {
+proc ::pdpk_plugin::Download { } {
 	destroy .t
 	set default "http...."
 	tk::toplevel .t
@@ -1029,7 +1154,7 @@ proc Download { } {
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 	
 	label .t.lbl1 -text "Enter the repository URL"
 	place .t.lbl1 -x 20 -y 5
@@ -1038,18 +1163,18 @@ proc Download { } {
 	place .t.url -x 10 -y 25
 	
 	button .t.bcancel -text "Cancel" -width 5 -height 1 \
-			-command {Cancelar .t}
+			-command {::pdpk_plugin::Cancelar .t}
 	place .t.bcancel -x 490 -y 20
 	
 	button .t.b -text "Ok" \
 			-command {
 				set url [.t.url get]
-				set rep [Ver_Rep $url]
+				set rep [::pdpk_plugin::Ver_Rep $url]
 				if { $rep } {
 				
-				.t configure -height 600
+				.t configure -height 500
 				.t configure -width 500
-				place .t.bcancel -x 10 -y 500
+				place .t.bcancel -x 15 -y 440
 				.t.bcancel configure -width 17 -height 2
 				
 				} else {
@@ -1082,8 +1207,7 @@ proc Download { } {
 				destroy .t.frm
 				destroy .t.frm.lbf.mlb
 				
-					puts " URL: $url"
-				
+								
 					frame .t.frm
 					labelframe .t.frm.lbf -text "Search Results for: $term" -padx 0 -width 57
 					tablelist::tablelist .t.frm.lbf.mlb -selectmode multiple -columns {0 "File" 0 "Name" 0 "Version" 0 "Archtectures" 0 "Summary" 0 "Type"} \
@@ -1109,13 +1233,13 @@ proc Download { } {
 					
  				
 				
-				set results [ join [ search_for $term $reptype ] \n ] 
+				set results [ join [ ::pdpk_plugin::search_for $term $reptype ] \n ] 
 
 				}
 								
 	place .t.b1 -x 10 -y 90
 	
-proc search_for {term reptype} {
+proc ::pdpk_plugin::search_for {term reptype} {
     set searchresults [list]
 
 set cont 0
@@ -1131,12 +1255,7 @@ set flag 0
 				
 					if {[regexp -nocase "$term" $search all linha ]} {
 						
-						#puts "linha: $linha"				
-						#puts "all: $all"
-						#puts "line: $line"			
-						#lappend searchresults [lindex $line 4]
-						
-						
+					
 						set name [lindex $line 1]
 						set version [lindex $line 2]
 						set arch [lindex $line 3]
@@ -1167,7 +1286,8 @@ set flag 0
 		}
 		
 	close $f
-	#puts $searchresults
+	file delete -force -- "RepDes"
+
 	destroy .t.b2
 	if { $flag ne 0 } {
 		button .t.b2 -text "Download Selected" -width 17 -height 2 \
@@ -1180,9 +1300,9 @@ set flag 0
 											
 											set contsele [.t.frm.lbf.mlb get $fils]
 											set file [lindex $contsele 0]
-											puts "FILE: $file"
+										
 											if { $file ne "" } {
-												getPage $url $file 
+												::pdpk_plugin::getPage $url $file 
 											}
 										}
 									} else {
@@ -1191,7 +1311,7 @@ set flag 0
 
 						}
 									
-		place .t.b2 -x 200 -y 500
+		place .t.b2 -x 270 -y 440
 		
 	}
 	set flag 0
@@ -1200,10 +1320,8 @@ set flag 0
 	
 }
 
-proc getPage { url outputfilename } {
-	 puts "FUNÇÃO GETPAGE"
-	 puts "URL: $url"
-	 puts "filename: $outputfilename"
+proc ::pdpk_plugin::getPage { url outputfilename } {
+	
      set f [open "~/pd-externals/pdpk_packages/$outputfilename" w]
     set status ""
     set errorstatus ""
@@ -1222,7 +1340,7 @@ proc getPage { url outputfilename } {
     return [list $status $errorstatus ]
   }
 
-proc Ver_Rep { url } {
+proc ::pdpk_plugin::Ver_Rep { url } {
 	
 	set status ""
     set errorstatus ""
@@ -1234,8 +1352,7 @@ proc Ver_Rep { url } {
 	
 	set status [::http::status $token]
     set errorstatus [::http::ncode $token]
-    puts "status: $status"
-    puts "error: $errorstatus"
+
     
     
     if { $errorstatus eq 200 } {
@@ -1250,12 +1367,14 @@ proc Ver_Rep { url } {
 		http::cleanup $httpresult
 		return true		
 	} else {
+		puts "Status: $status"
+		puts "Error: $errorstatus"
 		return false
 	}
-    #puts $contents
+    
 }
 
-proc Atualizar { } {
+proc ::pdpk_plugin::Atualizar { } {
 	destroy .t
 	set default "http...."
 	tk::toplevel .t
@@ -1268,7 +1387,7 @@ proc Atualizar { } {
 	set x [expr {([winfo screenwidth .t]-[winfo width .t])/2}]
 	set y [expr {([winfo screenheight .t]-[winfo height .t])/2}]
 	wm geometry  .t +$x+$y
-	wm transient .t .
+
 	
 	label .t.lbl1 -text "Enter the repository URL"
 	place .t.lbl1 -x 20 -y 5
@@ -1277,13 +1396,13 @@ proc Atualizar { } {
 	place .t.url -x 10 -y 25
 	
 	button .t.bcancel -text "Cancel" -width 5 -height 1 \
-			-command {Cancelar .t}
+			-command {::pdpk_plugin::Cancelar .t}
 	place .t.bcancel -x 490 -y 20
 	
 	button .t.b -text "Ok" \
 			-command {
 				set url [.t.url get]
-				set rep [Ver_Rep $url]
+				set rep [::pdpk_plugin::Ver_Rep $url]
 				if { $rep } {
 				
 				.t configure -height 350
@@ -1338,9 +1457,9 @@ proc Atualizar { } {
 										
 										set contsele [.t.frm.lbf.mlb get $fils]
 										set file [lindex $contsele 0]
-										puts "FILE: $file"
+										
 										if { $file ne "" } {
-											getPage $url $file 
+											::pdpk_plugin::getPage $url $file 
 										}
 									}
 									} else {
@@ -1373,7 +1492,7 @@ set flag 0
 				set arch [file tail $search]
 
 				set cont1 0
-				set f1 [open "~/pd-externals/RepositoryDescriptor.txt"]
+				set f1 [open "~/pd-externals/pdpk-mainrepo/RepositoryDescriptor.txt"]
 					while {[gets $f1 line1] != -1} {
 					
 						if {$cont1 < 4} {
@@ -1429,11 +1548,12 @@ set flag 0
 		}
 		
 	close $f
-	#puts $searchresults
+	file delete -force -- "RepDes/RepositoryDescriptor.txt"
+
 	
     return $flag
 }				
 	
 }
 
-
+::pdpk_plugin::Menu
